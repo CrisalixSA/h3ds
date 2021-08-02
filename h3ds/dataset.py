@@ -19,9 +19,9 @@ class H3DS:
 
         self.path = path
 
-        if not os.path.exists(self.path):
+        if not self.available():
             logger.warning(
-                f'{self.path} does not exist. Change the path or call H3DS.download.'
+                f'H3DS was not found at {self.path}. Change the path or call H3DS.download.'
             )
 
         self._load_config()
