@@ -14,21 +14,21 @@ In order to use the dataset, simply import the package in your python scripts
 ```python
 from h3ds import H3DS
 
-h3ds = H3DS(path='local_path_to_h3ds')
+h3ds = H3DS(path='local/path/to/h3ds')
 ```
 
 ## Using H3DS
-If it's the first time using H3DS, download the data (less than 500 Mb)
-```
+If it's the first time using H3DS, download the data (less than 500 Mb).
+```python
 h3ds.download(token=H3DS_ACCESS_TOKEN)
 ```
 
 You can easily list the ids of the available scenes
-```
+```python
 scenes = h3ds.scenes()
 ```
 
-To load the data from a concrete scene
-```
+and load the data from a concrete scene as:
+```python
 mesh, images, masks, cameras = h3ds.get_scene(scene_id='1b2a8613401e42a8')
 ```
