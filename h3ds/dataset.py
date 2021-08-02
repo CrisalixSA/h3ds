@@ -26,7 +26,13 @@ class H3DS:
 
         self._load_config()
 
-    def download(self, token):
+    def download(self, token, force=False):
+
+        # Check if dataset is already available
+        if self.is_available() and not force:
+            logger.info('Dataset already available. Skipping download')
+            return
+
         # Download zip file
         tmp_dir = os.path.join(self.path, 'tmp')
         if not os.path.exists(tmp_dir):
@@ -53,6 +59,36 @@ class H3DS:
         # Remove temporal zip
         logger.print(f'Removing temporary files')
         shutil.rmtree(tmp_dir)
+
+    def is_available(self):
+
+        # Check all scenes
+        for scene in self.scenes():
+
+            scene_path = os.path.join(self.path, scene)
+
+            # Check meshes
+            if not os.path.exists(os.path.join(scene_path, 'full_head.obj')):
+                return False
+            if not os.path.exists(os.path.join(scene_path, 'face.obj')):
+                return False
+
+            # Check images and masks
+            for idx in range(self._config['scenes'][scene]['views']):
+                if not os.path.exists(
+                        os.path.join(scene_path, 'image',
+                                     'img_{0:04}.jpg'.format(idx))):
+                    return False
+                if not os.path.exists(
+                        os.path.join(scene_path, 'mask',
+                                     'mask_{0:04}.jpg'.format(idx))):
+                    return False
+
+            # Check cameras
+            if not os.path.exists(os.path.join(scene_path, 'cameras.npz')):
+                return False
+
+        return True
 
     def scenes(self):
         return list(self._config['scenes'].keys())

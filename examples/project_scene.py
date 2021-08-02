@@ -31,7 +31,7 @@ def main(h3ds_path, output_dir):
 
     # Create instance of h3ds and download it if not available
     h3ds = H3DS(path=h3ds_path)
-    #h3ds.download(token=os.getenv('H3DS_ACCESS_TOKEN'))
+    h3ds.download(token=os.getenv('H3DS_ACCESS_TOKEN'))
 
     # Get a random scene data
     scene_id = random.choice(h3ds.scenes())
