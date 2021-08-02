@@ -10,6 +10,7 @@ from PIL import Image
 from log import logger
 from utils import download_file_from_google_drive, md5
 
+
 class H3DS:
 
     def __init__(self, path: str):
@@ -31,9 +32,8 @@ class H3DS:
 
         tmp_zip = os.path.join(tmp_dir, 'h3ds.zip')
         logger.print(f'Downloading H3DS dataset to {tmp_zip}')
-        download_file_from_google_drive(
-            id=self._config['file_id'],
-            destination=tmp_zip)
+        download_file_from_google_drive(id=self._config['file_id'],
+                                        destination=tmp_zip)
 
         # Check md5
         md5_zip = md5(tmp_zip)
@@ -45,8 +45,7 @@ class H3DS:
         # Unzip into self.path
         logger.print(f'Unzipping file to {self.path}')
         with zipfile.ZipFile(tmp_zip, 'r') as zip_ref:
-            zip_ref.extractall(self.path,
-                pwd=token.encode('utf8'))
+            zip_ref.extractall(self.path, pwd=token.encode('utf8'))
 
         # Remove temporal zip
         logger.print(f'Removing temporary files')
@@ -100,16 +99,21 @@ class H3DS:
             logger.exception(f'Invalid scene_id {scene_id}')
 
         if config_id not in self._config['views'][scene_id]:
-            logger.exception(f'Invalid config_id {config_id} for scene_id {scene_id}')
+            logger.exception(
+                f'Invalid config_id {config_id} for scene_id {scene_id}')
 
         return self._config['views'][scene_id][config_id]
 
     def _get_images(self, scene_id: str, rel_path: str):
         images_dir = os.path.join(self.path, scene_id, rel_path)
-        images_paths = sorted(list(glob.glob(os.path.join(images_dir, '*.jpg'))))
+        images_paths = sorted(list(glob.glob(os.path.join(images_dir,
+                                                          '*.jpg'))))
         return [Image.open(img).copy() for img in images_paths]
 
-    def _filter_views(self, elements, scene_id: str, views_config_id: str = None):
+    def _filter_views(self,
+                      elements,
+                      scene_id: str,
+                      views_config_id: str = None):
 
         if views_config_id is None:
             return elements

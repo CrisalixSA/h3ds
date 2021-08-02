@@ -30,5 +30,5 @@ scenes = h3ds.scenes()
 
 and load the data from a concrete scene as:
 ```python
-mesh, images, masks, cameras = h3ds.get_scene(scene_id='1b2a8613401e42a8')
+mesh, images, masks, cameras = h3ds.load_scene(scene_id='1b2a8613401e42a8')
 ```
