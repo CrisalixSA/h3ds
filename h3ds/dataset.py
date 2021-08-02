@@ -4,11 +4,12 @@ import zipfile
 import shutil
 
 import toml
+from tqdm import tqdm
 import trimesh
 from PIL import Image
 
-from log import logger
-from utils import download_file_from_google_drive, md5
+from h3ds.log import logger
+from h3ds.utils import download_file_from_google_drive, md5
 
 class H3DS:
 
@@ -45,8 +46,8 @@ class H3DS:
         # Unzip into self.path
         logger.print(f'Unzipping file to {self.path}')
         with zipfile.ZipFile(tmp_zip, 'r') as zip_ref:
-            zip_ref.extractall(self.path,
-                pwd=token.encode('utf8'))
+            for member in tqdm(zip_ref.infolist(), desc='Extracting...'):
+                    zip_ref.extract(member, self.path, pwd=token.encode('utf-8'))
 
         # Remove temporal zip
         logger.print(f'Removing temporary files')
