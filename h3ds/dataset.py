@@ -47,7 +47,7 @@ class H3DS:
         logger.print(f'Unzipping file to {self.path}')
         with zipfile.ZipFile(tmp_zip, 'r') as zip_ref:
             for member in tqdm(zip_ref.infolist(), desc='Extracting...'):
-                    zip_ref.extract(member, self.path, pwd=token.encode('utf-8'))
+                zip_ref.extract(member, self.path, pwd=token.encode('utf-8'))
 
         # Remove temporal zip
         logger.print(f'Removing temporary files')
