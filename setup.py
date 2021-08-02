@@ -44,6 +44,8 @@ setup(
         'requests',
         'trimesh',
         'Pillow',
-        'tqdm'
+        'tqdm',
+        'opencv-python'
+
     ],
 )
