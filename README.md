@@ -10,31 +10,25 @@ The simplest way to use the H3DS dataset is by installing it as a pip package:
 pip install h3ds
 ```
 
-In order to use the dataset, define the following envars with the `H3DS_ACCESS_TOKEN` provided and a (optional) local path:
-```bash
-export H3DS_ACCESS_TOKEN=token_provided
-export H3DS_PATH=path/for/h3ds
-```
-
-Finally, simply import the package in your python scripts
+In order to use the dataset, simply import the package in your python scripts
 ```python
 from h3ds import H3DS
 
-h3ds = H3DS()
+h3ds = H3DS(path='local_path_to_h3ds')
 ```
 
 ## Using H3DS
-First of all, pull the data (less than 500 Mb)
+If it's the first time using H3DS, download the data (less than 500 Mb)
 ```
-h3ds.pull()
+h3ds.download(token=H3DS_ACCESS_TOKEN)
 ```
 
-List the ids of the available scenes
+You can easily list the ids of the available scenes
 ```
 scenes = h3ds.scenes()
 ```
 
-Get data from a scene
+To load the data from a concrete scene
 ```
-mesh, images, cameras = h3ds.get_scene(scene_id=scenes[0])
+mesh, images, masks, cameras = h3ds.get_scene(scene_id='1b2a8613401e42a8')
 ```
