@@ -17,7 +17,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 # Build setup
 setup(
-    name='h3ds',
+    name=PACKAGE_NAME,
     version=__version__,
     author='Eduard Ramon Maldonado',
     author_email='eduard.ramon.maldonado@gmail.com',
@@ -48,4 +48,7 @@ setup(
         'opencv-python'
 
     ],
+    package_data={
+        '': ['config.toml']
+    }
 )
