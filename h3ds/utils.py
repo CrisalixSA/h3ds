@@ -52,9 +52,7 @@ def load_K_Rt(P: np.ndarray):
     R = dec[1]
     t = dec[2]
 
-    K = K / K[2, 2]
-    intrinsics = np.eye(4)
-    intrinsics[:3, :3] = K
+    intrinsics = K / K[2, 2]
 
     pose = np.eye(4, dtype=np.float32)
     pose[:3, :3] = R.transpose()
