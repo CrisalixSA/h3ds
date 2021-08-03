@@ -2,4 +2,7 @@ toml~=0.10.2
 requests~=2.26.0
 trimesh~=3.4.7
 Pillow~=8.3.1
-tqdm
+tqdm~=4.62.0
+opencv-python~=4.5.3.56
+build~=0.5.1
+twine~=3.4.2
