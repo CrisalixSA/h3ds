@@ -42,7 +42,8 @@ class H3DSHelper:
         return list(self._config['scenes'].keys())
 
     def files(self):
-        return reduce(lambda x,y: x+y, [self.scene_files(s) for s in self.scenes()])
+        return reduce(lambda x, y: x + y,
+                      [self.scene_files(s) for s in self.scenes()])
 
     def default_views_config(self, scene_id: str):
         return list(
@@ -52,16 +53,27 @@ class H3DSHelper:
         return self._config['scenes'][scene_id]['views']
 
     def scene_files(self, scene_id: str):
-        return  [self.scene_mesh(scene_id)] + self.scene_images(scene_id) + self.scene_masks(scene_id) + [self.scene_cameras(scene_id)]
+        return [self.scene_mesh(scene_id)
+               ] + self.scene_images(scene_id) + self.scene_masks(scene_id) + [
+                   self.scene_cameras(scene_id)
+               ]
 
     def scene_mesh(self, scene_id: str):
         return os.path.join(self.path, scene_id, 'full_head.obj')
 
     def scene_images(self, scene_id: str):
-        return [os.path.join(self.path, scene_id, 'image', 'img_{0:04}.jpg'.format(idx)) for idx in range(self.scene_views(scene_id))]
+        return [
+            os.path.join(self.path, scene_id, 'image',
+                         'img_{0:04}.jpg'.format(idx))
+            for idx in range(self.scene_views(scene_id))
+        ]
 
     def scene_masks(self, scene_id: str):
-        return [os.path.join(self.path, scene_id, 'mask', 'mask_{0:04}.jpg'.format(idx)) for idx in range(self.scene_views(scene_id))]
+        return [
+            os.path.join(self.path, scene_id, 'mask',
+                         'mask_{0:04}.jpg'.format(idx))
+            for idx in range(self.scene_views(scene_id))
+        ]
 
     def scene_cameras(self, scene_id: str):
         return os.path.join(self.path, scene_id, 'cameras.npz')
@@ -72,7 +84,8 @@ class H3DS:
     def __init__(self, path: str, config_path: str = None):
 
         self.path = path
-        self.config_path = config_path or ConfigsHelper.get_config_file('config')
+        self.config_path = config_path or ConfigsHelper.get_config_file(
+            'config')
         self.helper = H3DSHelper(path=self.path, config_path=self.config_path)
         self._config = self.helper._config
 
