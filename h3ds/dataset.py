@@ -18,13 +18,12 @@ class H3DS:
     def __init__(self, path: str):
 
         self.path = path
+        self._load_config()
 
         if not self.is_available():
             logger.warning(
                 f'H3DS was not found at {self.path}. Change the path or call H3DS.download.'
             )
-
-        self._load_config()
 
     def download(self, token, force=False):
 
