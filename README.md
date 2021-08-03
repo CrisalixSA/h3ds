@@ -1,4 +1,7 @@
 # H3DS Dataset
+
+[![PyPI](https://img.shields.io/pypi/v/h3ds?style=flat-square)](https://pypi.org/project/h3ds/)
+
 This repository contains some utilities for using the H3DS dataset introduced in [H3D-Net: Few-Shot High-Fidelity 3D Head Reconstruction](https://arxiv.org/abs/2107.12512v1)
 
 ## Access
