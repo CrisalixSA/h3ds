@@ -13,7 +13,7 @@ pip install h3ds
 ## Using H3DS
 In order to use the dataset, simply import the package in your python scripts.
 ```python
-from h3ds import H3DS
+from h3ds.dataset import H3DS
 
 h3ds = H3DS(path='local/path/to/h3ds')
 ```
