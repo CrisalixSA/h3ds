@@ -2,6 +2,7 @@ import os
 import glob
 import zipfile
 import shutil
+from functools import reduce
 
 import toml
 from tqdm import tqdm
@@ -13,12 +14,67 @@ from h3ds.log import logger
 from h3ds.utils import download_file_from_google_drive, md5, load_K_Rt
 
 
+class ConfigsHelper:
+
+    identifiers = ['config']
+
+    @classmethod
+    def configs(cls):
+        return cls.identifiers
+
+    @classmethod
+    def is_available(cls, config_id: str):
+        return config_id in cls.configs()
+
+    @staticmethod
+    def get_config_file(config_id: str):
+        config_dir = os.path.dirname(os.path.realpath(__file__))
+        return os.path.join(config_dir, f'{config_id}.toml')
+
+
+class H3DSHelper:
+
+    def __init__(self, path, config_path: str):
+        self.path = path
+        self._config = toml.load(config_path)
+
+    def scenes(self):
+        return list(self._config['scenes'].keys())
+
+    def files(self):
+        return reduce(lambda x,y: x+y, [self.scene_files(s) for s in self.scenes()])
+
+    def default_views_config(self, scene_id: str):
+        return list(
+            self._config['scenes'][scene_id]['default_views_configs'].keys())
+
+    def scene_views(self, scene_id: str):
+        return self._config['scenes'][scene_id]['views']
+
+    def scene_files(self, scene_id: str):
+        return  [self.scene_mesh(scene_id)] + self.scene_images(scene_id) + self.scene_masks(scene_id) + [self.scene_cameras(scene_id)]
+
+    def scene_mesh(self, scene_id: str):
+        return os.path.join(self.path, scene_id, 'full_head.obj')
+
+    def scene_images(self, scene_id: str):
+        return [os.path.join(self.path, scene_id, 'image', 'img_{0:04}.jpg'.format(idx)) for idx in range(self.scene_views(scene_id))]
+
+    def scene_masks(self, scene_id: str):
+        return [os.path.join(self.path, scene_id, 'mask', 'mask_{0:04}.jpg'.format(idx)) for idx in range(self.scene_views(scene_id))]
+
+    def scene_cameras(self, scene_id: str):
+        return os.path.join(self.path, scene_id, 'cameras.npz')
+
+
 class H3DS:
 
-    def __init__(self, path: str):
+    def __init__(self, path: str, config_path: str = None):
 
         self.path = path
-        self._load_config()
+        self.config_path = config_path or ConfigsHelper.get_config_file('config')
+        self.helper = H3DSHelper(path=self.path, config_path=self.config_path)
+        self._config = self.helper._config
 
         if not self.is_available():
             logger.warning(
@@ -60,45 +116,15 @@ class H3DS:
         shutil.rmtree(tmp_dir)
 
     def is_available(self):
-
-        # Check all scenes
-        for scene in self.scenes():
-
-            scene_path = os.path.join(self.path, scene)
-
-            # Check meshes
-            if not os.path.exists(os.path.join(scene_path, 'full_head.obj')):
-                return False
-            if not os.path.exists(os.path.join(scene_path, 'face.obj')):
-                return False
-
-            # Check images and masks
-            for idx in range(self._config['scenes'][scene]['views']):
-                if not os.path.exists(
-                        os.path.join(scene_path, 'image',
-                                     'img_{0:04}.jpg'.format(idx))):
-                    return False
-                if not os.path.exists(
-                        os.path.join(scene_path, 'mask',
-                                     'mask_{0:04}.jpg'.format(idx))):
-                    return False
-
-            # Check cameras
-            if not os.path.exists(os.path.join(scene_path, 'cameras.npz')):
-                return False
-
-        return True
+        return all([os.path.exists(f) for f in self.helper.files()])
 
     def scenes(self):
-        return list(self._config['scenes'].keys())
+        return self.helper.scenes()
 
     def default_views_configs(self, scene_id: str):
-        return list(
-            self._config['scenes'][scene_id]['default_views_configs'].keys())
+        return self.helper.default_views_configs()
 
     def load_scene(self, scene_id: str, views_config_id: str = None):
-        scene_path = os.path.join(self.path, scene_id)
-
         mesh = self.load_mesh(scene_id)
         images = self.load_images(scene_id, views_config_id)
         masks = self.load_masks(scene_id, views_config_id)
@@ -107,23 +133,20 @@ class H3DS:
         return mesh, images, masks, cameras
 
     def load_mesh(self, scene_id: str):
-        mesh_path = os.path.join(self.path, scene_id, 'full_head.obj')
-
-        return trimesh.load(mesh_path, process=False)
+        return trimesh.load(self.helper.scene_mesh(scene_id), process=False)
 
     def load_images(self, scene_id: str, views_config_id: str = None):
-        images = self._load_images(scene_id, 'image')
+        images = self._load_images(self.helper.scene_images(scene_id))
 
         return self._filter_views(images, scene_id, views_config_id)
 
     def load_masks(self, scene_id: str, views_config_id: str = None):
-        masks = self._load_images(scene_id, 'mask')
+        masks = self._load_images(self.helper.scene_masks(scene_id))
 
         return self._filter_views(masks, scene_id, views_config_id)
 
     def load_cameras(self, scene_id: str, views_config_id: str = None):
-        cameras_path = os.path.join(self.path, scene_id, 'cameras.npz')
-        camera_dict = np.load(cameras_path)
+        camera_dict = np.load(self.helper.scene_cameras(scene_id))
 
         cameras = []
         for idx in range(self._config['scenes'][scene_id]['views']):
@@ -134,30 +157,12 @@ class H3DS:
 
         return self._filter_views(cameras, scene_id, views_config_id)
 
-    def _load_config(self):
-        h3ds_dir = os.path.dirname(os.path.realpath(__file__))
-        config_path = os.path.join(h3ds_dir, 'config.toml')
-
-        self._config = toml.load(config_path)
+    def _load_images(self, images_paths: list):
+        return [Image.open(img).copy() for img in images_paths]
 
     def _get_views_config(self, scene_id: str, config_id: str):
-
-        if scene_id not in self._config['scenes']:
-            logger.exception(f'Invalid scene_id {scene_id}')
-
-        if config_id not in self._config['scenes'][scene_id][
-                'default_views_configs']:
-            logger.exception(
-                f'Invalid config_id {config_id} for scene_id {scene_id}')
-
         return self._config['scenes'][scene_id]['default_views_configs'][
             config_id]
-
-    def _load_images(self, scene_id: str, rel_path: str):
-        images_dir = os.path.join(self.path, scene_id, rel_path)
-        images_paths = sorted(list(glob.glob(os.path.join(images_dir,
-                                                          '*.jpg'))))
-        return [Image.open(img).copy() for img in images_paths]
 
     def _filter_views(self,
                       elements,
