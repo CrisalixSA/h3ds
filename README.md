@@ -10,14 +10,14 @@ The simplest way to use the H3DS dataset is by installing it as a pip package:
 pip install h3ds
 ```
 
-In order to use the dataset, simply import the package in your python scripts
+## Using H3DS
+In order to use the dataset, simply import the package in your python scripts.
 ```python
 from h3ds import H3DS
 
 h3ds = H3DS(path='local/path/to/h3ds')
 ```
 
-## Using H3DS
 If it's the first time using H3DS, download the data (less than 500 Mb).
 ```python
 h3ds.download(token=H3DS_ACCESS_TOKEN)
