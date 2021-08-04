@@ -46,7 +46,7 @@ def main(h3ds_path, output_dir):
 
 if __name__ == "__main__":
 
-    parser = argparse.ArgumentParser(description='')
+    parser = argparse.ArgumentParser(description='Reprojecting a scene')
     parser.add_argument('--h3ds-path', help='H3DS dataset path', required=True)
     parser.add_argument('--output-dir',
                         help='Output directory to store the results',

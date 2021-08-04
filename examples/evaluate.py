@@ -47,7 +47,8 @@ def main(h3ds_path):
 
 if __name__ == "__main__":
 
-    parser = argparse.ArgumentParser(description='')
+    parser = argparse.ArgumentParser(
+        description='Exemplifies how to evaluate a method')
     parser.add_argument('--h3ds-path', help='H3DS dataset path', required=True)
 
     args = parser.parse_args()

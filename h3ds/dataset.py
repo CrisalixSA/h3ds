@@ -186,6 +186,15 @@ class H3DS:
 
         return self._filter_views(cameras, scene_id, views_config_id)
 
+    def load_normalization_matrix(self, scene_id: str):
+        '''
+        Transforms the scene from mm scale to the unit sphere
+        '''
+        norm = self._load_normalization_transform(scene_id)
+        denorm = self._load_denormalization_transform(scene_id)
+
+        return norm.matrix @ denorm.inverse().matrix
+
     def _load_scene_transform(self, scene_id: str, normalized: bool = False):
         if normalized:
             return self._load_normalization_transform(scene_id)
@@ -206,11 +215,12 @@ class H3DS:
         Transforms the scene towards the original scale (mm)
         '''
         denormalization_matrix = AffineTransform().load(
-            self.helper.scene_normalization_transform(scene_id)).inverse().matrix
-        scaling = np.linalg.norm(denormalization_matrix[:3,0])
+            self.helper.scene_normalization_transform(
+                scene_id)).inverse().matrix
+        scaling = np.linalg.norm(denormalization_matrix[:3, 0])
 
         denormalization_transform = AffineTransform()
-        denormalization_transform.matrix[:3,:3] *= scaling
+        denormalization_transform.matrix[:3, :3] *= scaling
 
         return denormalization_transform
 
