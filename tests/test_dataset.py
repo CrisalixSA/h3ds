@@ -10,7 +10,7 @@ import numpy as np
 from PIL import Image
 
 from h3ds.dataset import ConfigsHelper, H3DSHelper, H3DS
-
+from h3ds.numeric import AffineTransform
 
 class TestConfigsHelper(unittest.TestCase):
 
@@ -134,6 +134,7 @@ class TestDataset(TestH3DSBase):
                 cameras['scale_mat_%d' % idx] = np.random.rand(4, 4)
                 cameras['world_mat_%d' % idx] = np.random.rand(4, 4)
             np.savez(self.helper.scene_cameras(s), **cameras)
+            AffineTransform().save(self.helper.scene_normalization_transform(s))
 
     def test_is_available(self):
 

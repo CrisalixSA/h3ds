@@ -46,6 +46,19 @@ class AffineTransform:
                         int(el['column'])] = float(el['element'])
         return self
 
+    def save(self, filename: str):
+        data = {"dimension": str(self.dim), 'transform': []}
+        for r in range(self.dim+1):
+            for c in range(self.dim+1):
+                data['transform'].append({
+                    'row': str(r),
+                    'column': str(c),
+                    'element': str(self.matrix[r,c])
+                })
+
+        with open(filename, 'w') as f:
+            json.dump(data, f)
+
     def transform(self, points: np.ndarray):
         # Assuming ( n_points, dim)
         n_points, dim = points.shape
