@@ -87,7 +87,7 @@ class H3DS:
 
     def __init__(self, path: str, config_path: str = None):
 
-        self.path = path
+        self.path = os.path.expanduser(path)
         self.config_path = config_path or ConfigsHelper.get_config_file(
             'config')
         self.helper = H3DSHelper(path=self.path, config_path=self.config_path)
