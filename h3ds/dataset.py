@@ -120,7 +120,7 @@ class H3DS:
         if md5_zip == self._config['file_md5']:
             logger.print('MD5 check - Success')
         else:
-            logger.error('MD5 check - Failed')
+            logger.critical('MD5 check - Failed')
 
         # Unzip into self.path
         logger.print(f'Unzipping file to {self.path}')
