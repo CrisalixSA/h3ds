@@ -19,8 +19,8 @@ with open("README.md", "r", encoding="utf-8") as fh:
 setup(
     name=PACKAGE_NAME,
     version=__version__,
-    author='Eduard Ramon Maldonado',
-    author_email='eduard.ramon.maldonado@gmail.com',
+    author='Crisalix SA',
+    author_email='eduard.ramon@crisalix.com',
     description='Python interface for H3DS dataset',
     long_description=LONG_DESCRIPTION,
     long_description_content_type='text/markdown',
@@ -45,8 +45,8 @@ setup(
         'trimesh',
         'Pillow',
         'tqdm',
-        'opencv-python'
-
+        'opencv-python',
+        'scipy'
     ],
     package_data={
         '': ['config.toml']
