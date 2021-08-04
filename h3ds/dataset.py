@@ -205,8 +205,14 @@ class H3DS:
         '''
         Transforms the scene towards the original scale (mm)
         '''
-        return AffineTransform().load(
-            self.helper.scene_normalization_transform(scene_id)).inverse()
+        denormalization_matrix = AffineTransform().load(
+            self.helper.scene_normalization_transform(scene_id)).inverse().matrix
+        scaling = np.linalg.norm(denormalization_matrix[:3,0])
+
+        denormalization_transform = AffineTransform()
+        denormalization_transform.matrix[:3,:3] *= scaling
+
+        return denormalization_transform
 
     def _load_images(self, images_paths: list):
         return [Image.open(img).copy() for img in images_paths]
