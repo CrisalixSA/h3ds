@@ -6,3 +6,5 @@ tqdm~=4.62.0
 opencv-python~=4.5.3.56
 build~=0.5.1
 twine~=3.4.2
+scipy~=1.5.4
+yapf~=0.31.0

@@ -11,7 +11,8 @@ from PIL import Image
 import numpy as np
 
 from h3ds.log import logger
-from h3ds.utils import download_file_from_google_drive, md5, load_K_Rt
+from h3ds.utils import download_file_from_google_drive, md5
+from h3ds.numeric import load_K_Rt, AffineTransform
 
 
 class ConfigsHelper:
@@ -78,6 +79,9 @@ class H3DSHelper:
     def scene_cameras(self, scene_id: str):
         return os.path.join(self.path, scene_id, 'cameras.npz')
 
+    def scene_normalization_transform(self, scene_id: str):
+        return os.path.join(self.path, scene_id, 'normalization_transform.json')
+
 
 class H3DS:
 
@@ -137,16 +141,24 @@ class H3DS:
     def default_views_configs(self, scene_id: str):
         return self.helper.default_views_configs()
 
-    def load_scene(self, scene_id: str, views_config_id: str = None):
-        mesh = self.load_mesh(scene_id)
+    def load_scene(self,
+                   scene_id: str,
+                   views_config_id: str = None,
+                   normalized: bool = False):
+        mesh = self.load_mesh(scene_id, normalized)
         images = self.load_images(scene_id, views_config_id)
         masks = self.load_masks(scene_id, views_config_id)
-        cameras = self.load_cameras(scene_id, views_config_id)
+        cameras = self.load_cameras(scene_id, views_config_id, normalized)
 
         return mesh, images, masks, cameras
 
-    def load_mesh(self, scene_id: str):
-        return trimesh.load(self.helper.scene_mesh(scene_id), process=False)
+    def load_mesh(self, scene_id: str, normalized: bool = False):
+        scene_transform = self._load_scene_transform(scene_id, normalized)
+
+        mesh = trimesh.load(self.helper.scene_mesh(scene_id), process=False)
+        mesh.vertices = scene_transform.transform(mesh.vertices)
+
+        return mesh
 
     def load_images(self, scene_id: str, views_config_id: str = None):
         images = self._load_images(self.helper.scene_images(scene_id))
@@ -158,17 +170,43 @@ class H3DS:
 
         return self._filter_views(masks, scene_id, views_config_id)
 
-    def load_cameras(self, scene_id: str, views_config_id: str = None):
+    def load_cameras(self,
+                     scene_id: str,
+                     views_config_id: str = None,
+                     normalized: bool = False):
         camera_dict = np.load(self.helper.scene_cameras(scene_id))
+        scene_transform = self._load_scene_transform(scene_id, normalized)
 
         cameras = []
         for idx in range(self._config['scenes'][scene_id]['views']):
-            s = camera_dict['scale_mat_%d' % idx].astype(np.float32)
             P = camera_dict['world_mat_%d' % idx].astype(np.float32)
+            P = P @ np.linalg.inv(scene_transform.matrix)
             K, P = load_K_Rt(P[:3, :4])
-            cameras.append((s, K, P))
+            cameras.append((K, P))
 
         return self._filter_views(cameras, scene_id, views_config_id)
+
+    def _load_scene_transform(self, scene_id: str, normalized: bool = False):
+        if normalized:
+            return self._load_normalization_transform(scene_id)
+        else:
+            return self._load_denormalization_transform(scene_id)
+
+    def _load_normalization_transform(self, scene_id: str):
+        '''
+        Transforms the scene into a unit sphere
+        '''
+        camera_dict = np.load(self.helper.scene_cameras(scene_id))
+        s = camera_dict['scale_mat_0'].astype(np.float32)
+        t = AffineTransform(matrix=np.linalg.inv(s))
+        return t
+
+    def _load_denormalization_transform(self, scene_id: str):
+        '''
+        Transforms the scene towards the original scale (mm)
+        '''
+        return AffineTransform().load(
+            self.helper.scene_normalization_transform(scene_id)).inverse()
 
     def _load_images(self, images_paths: list):
         return [Image.open(img).copy() for img in images_paths]

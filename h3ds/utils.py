@@ -1,4 +1,3 @@
-import cv2
 import hashlib
 from requests import Session, Response
 import numpy as np
@@ -43,19 +42,3 @@ def md5(filepath: str):
         for chunk in iter(lambda: f.read(4096), b""):
             hash_md5.update(chunk)
     return hash_md5.hexdigest()
-
-
-def load_K_Rt(P: np.ndarray):
-
-    dec = cv2.decomposeProjectionMatrix(P)
-    K = dec[0]
-    R = dec[1]
-    t = dec[2]
-
-    intrinsics = K / K[2, 2]
-
-    pose = np.eye(4, dtype=np.float32)
-    pose[:3, :3] = R.transpose()
-    pose[:3, 3] = (t[:3] / t[3])[:, 0]
-
-    return intrinsics, pose

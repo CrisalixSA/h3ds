@@ -11,7 +11,7 @@ from h3ds.dataset import H3DS
 def project_scene(mesh, img, cam, color=[255, 0, 0]):
 
     # Expand cam attributes
-    s, K, P = cam
+    K, P = cam
     P_inv = np.linalg.inv(P)
 
     # Project mesh vertices into 2D
