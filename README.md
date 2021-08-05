@@ -38,8 +38,14 @@ This will load a scene with 3 images, 3 masks and 3 cameras.
 
 Please, see the provided examples for more insights.
 
+## Terms of use
+By using the H3DS Dataset you agree with the following terms:
+
+1. The data must be used for non-commercial research and/or education purposes only.
+2. You agree not to copy, sell, trade, or exploit the data for any commercial purposes.
+3. If you will be publishing any work using this dataset, please cite the original paper.
+
 ## Citation
-If you find this work useful, please use the following to cite our paper:
 ```
 @article{ramon2021h3d,
   title={H3D-Net: Few-Shot High-Fidelity 3D Head Reconstruction},
