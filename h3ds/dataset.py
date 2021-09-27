@@ -151,10 +151,11 @@ class H3DS:
         return mesh, images, masks, cameras
 
     def load_mesh(self, scene_id: str, normalized: bool = False):
-        scene_transform = self._load_scene_transform(scene_id, normalized)
-
         mesh = trimesh.load(self.helper.scene_mesh(scene_id), process=False)
-        mesh.vertices = scene_transform.transform(mesh.vertices)
+        if normalized:
+            normalization_transform = self._load_normalization_transform(
+                scene_id)
+            mesh.vertices = normalization_transform.transform(mesh.vertices)
 
         return mesh
 
@@ -173,12 +174,15 @@ class H3DS:
                      views_config_id: str = None,
                      normalized: bool = False):
         camera_dict = np.load(self.helper.scene_cameras(scene_id))
-        scene_transform = self._load_scene_transform(scene_id, normalized)
+        if normalized:
+            normalization_transform = self._load_normalization_transform(
+                scene_id)
 
         cameras = []
         for idx in range(self._config['scenes'][scene_id]['views']):
             P = camera_dict['world_mat_%d' % idx].astype(np.float32)
-            P = P @ np.linalg.inv(scene_transform.matrix)
+            if normalized:
+                P = P @ np.linalg.inv(normalization_transform.matrix)
             K, P = load_K_Rt(P[:3, :4])
             cameras.append((K, P))
 
@@ -188,16 +192,7 @@ class H3DS:
         '''
         Transforms the scene from mm scale to the unit sphere
         '''
-        norm = self._load_normalization_transform(scene_id)
-        denorm = self._load_denormalization_transform(scene_id)
-
-        return norm.matrix @ denorm.inverse().matrix
-
-    def _load_scene_transform(self, scene_id: str, normalized: bool = False):
-        if normalized:
-            return self._load_normalization_transform(scene_id)
-        else:
-            return self._load_denormalization_transform(scene_id)
+        return self._load_normalization_transform(scene_id).matrix
 
     def _load_normalization_transform(self, scene_id: str):
         '''
@@ -207,13 +202,6 @@ class H3DS:
         s = camera_dict['scale_mat_0'].astype(np.float32)
         t = AffineTransform(matrix=np.linalg.inv(s))
         return t
-
-    def _load_denormalization_transform(self, scene_id: str):
-        '''
-        Transforms the scene towards the original scale (mm)
-        Note: Scenes are already in mm from v0.2
-        '''
-        return AffineTransform()
 
     def _load_images(self, images_paths: list):
         return [Image.open(img).copy() for img in images_paths]
