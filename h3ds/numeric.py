@@ -48,12 +48,12 @@ class AffineTransform:
 
     def save(self, filename: str):
         data = {"dimension": str(self.dim), 'transform': []}
-        for r in range(self.dim+1):
-            for c in range(self.dim+1):
+        for r in range(self.dim + 1):
+            for c in range(self.dim + 1):
                 data['transform'].append({
                     'row': str(r),
                     'column': str(c),
-                    'element': str(self.matrix[r,c])
+                    'element': str(self.matrix[r, c])
                 })
 
         with open(filename, 'w') as f:

@@ -54,7 +54,6 @@ if __name__ == "__main__":
                         required=True)
 
     args = parser.parse_args()
-    main(
-        h3ds_path=args.h3ds_path,
-        h3ds_token=args.h3ds_token,
-        output_dir=args.output_dir)
+    main(h3ds_path=args.h3ds_path,
+         h3ds_token=args.h3ds_token,
+         output_dir=args.output_dir)

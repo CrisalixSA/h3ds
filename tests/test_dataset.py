@@ -12,6 +12,7 @@ from PIL import Image
 from h3ds.dataset import ConfigsHelper, H3DSHelper, H3DS
 from h3ds.numeric import AffineTransform
 
+
 class TestConfigsHelper(unittest.TestCase):
 
     def test_configs(self):
