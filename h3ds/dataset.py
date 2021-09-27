@@ -72,15 +72,12 @@ class H3DSHelper:
     def scene_masks(self, scene_id: str):
         return [
             os.path.join(self.path, scene_id, 'mask',
-                         'mask_{0:04}.jpg'.format(idx))
+                         'mask_{0:04}.png'.format(idx))
             for idx in range(self.scene_views(scene_id))
         ]
 
     def scene_cameras(self, scene_id: str):
         return os.path.join(self.path, scene_id, 'cameras.npz')
-
-    def scene_normalization_transform(self, scene_id: str):
-        return os.path.join(self.path, scene_id, 'normalization_transform.json')
 
 
 class H3DS:
@@ -110,7 +107,8 @@ class H3DS:
         if not os.path.exists(tmp_dir):
             os.makedirs(tmp_dir)
 
-        tmp_zip = os.path.join(tmp_dir, 'h3ds.zip')
+        version = self._config['version']
+        tmp_zip = os.path.join(tmp_dir, f'h3ds_{version}.zip')
         logger.print(f'Downloading H3DS dataset to {tmp_zip}')
         download_file_from_google_drive(id=self._config['file_id'],
                                         destination=tmp_zip)
@@ -213,16 +211,9 @@ class H3DS:
     def _load_denormalization_transform(self, scene_id: str):
         '''
         Transforms the scene towards the original scale (mm)
+        Note: Scenes are already in mm from v0.2
         '''
-        denormalization_matrix = AffineTransform().load(
-            self.helper.scene_normalization_transform(
-                scene_id)).inverse().matrix
-        scaling = np.linalg.norm(denormalization_matrix[:3, 0])
-
-        denormalization_transform = AffineTransform()
-        denormalization_transform.matrix[:3, :3] *= scaling
-
-        return denormalization_transform
+        return AffineTransform()
 
     def _load_images(self, images_paths: list):
         return [Image.open(img).copy() for img in images_paths]
