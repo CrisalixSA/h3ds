@@ -42,6 +42,7 @@ class TestH3DSBase(unittest.TestCase):
             'version': 0.1,
             'scenes': {
                 'a1b2c3': {
+                    'tags': ['tag'],
                     'views': 3,
                     'default_views_configs': {
                         '3': [0, 1, 2]
@@ -76,6 +77,14 @@ class TestH3DSHelper(TestH3DSBase):
 
     def test_default_views_config(self):
         self.assertEqual(self.helper.default_views_config('a1b2c3'), ['3'])
+
+    def test_scene_tags(self):
+        self.assertEqual(self.helper.scenes_tags(), set(['tag']))
+        self.assertRaises(Exception, self.helper.scenes, tags={'wrong-tag'})
+        try:
+            self.helper.scenes(tags={'tag'})
+        except:
+            self.fail("Error loading scenes with tag 'tag'")
 
     def test_scene_views(self):
         self.assertEqual(self.helper.scene_views('a1b2c3'), 3)

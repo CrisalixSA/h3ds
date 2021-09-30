@@ -25,9 +25,9 @@ def main(h3ds_path, h3ds_token):
     h3ds = H3DS(path=h3ds_path)
     h3ds.download(token=h3ds_token)
 
-    # Reconstruct all the scenes and store the metric
+    # Reconstruct all the scenes used in the h3d-net paper and store the metric
     metrics = {}
-    for scene_id in h3ds.scenes():
+    for scene_id in h3ds.scenes(tags={'h3d-net'}):
 
         # Get data in millimiters
         mesh_gt, images, masks, cameras = h3ds.load_scene(scene_id,
@@ -40,11 +40,12 @@ def main(h3ds_path, h3ds_token):
                                             target=mesh_gt.vertices))
 
         logger.info(
-            f'Scene {scene_id} - Chamfer Distance (mm): {metrics[scene_id]}'
+            f'H3D-Net scene {scene_id} - Chamfer Distance (mm): {metrics[scene_id]}'
         )
 
     # Show average results
-    logger.info(f'Average Chamfer Distance (mm): {np.mean(list(metrics.values()))}')
+    logger.info(
+        f'Average Chamfer Distance (mm): {np.mean(list(metrics.values()))}')
 
 
 if __name__ == "__main__":
@@ -55,5 +56,4 @@ if __name__ == "__main__":
     parser.add_argument('--h3ds-token', help='H3DS access token', required=True)
 
     args = parser.parse_args()
-    main(h3ds_path=args.h3ds_path,
-        h3ds_token=args.h3ds_token)
+    main(h3ds_path=args.h3ds_path, h3ds_token=args.h3ds_token)

@@ -49,8 +49,21 @@ class H3DSHelper:
         except:
             return None
 
-    def scenes(self):
-        return list(self._config['scenes'].keys())
+    def scenes_tags(self):
+        return reduce(lambda x,y: x.union(y), \
+            [self.scene_tags(s) for s in self._config['scenes'].keys()])
+
+    def scenes(self, tags: set = {}):
+        if not set(tags).issubset(self.scenes_tags()):
+            logger.critical(
+                f'{tags} tags not available. Call H3DSHelper.scenes_tags to list the available tags'
+            )
+
+        scenes = list(self._config['scenes'].keys())
+        if tags:
+            cond = lambda s: set(tags).issubset(set(self.scene_tags(s)))
+            scenes = list(filter(cond, scenes))
+        return scenes
 
     def files(self):
         return [self.version_file()] + \
@@ -65,6 +78,9 @@ class H3DSHelper:
 
     def version_file(self):
         return os.path.join(self.path, 'version.txt')
+
+    def scene_tags(self, scene_id):
+        return set(self._config['scenes'][scene_id].get('tags', []))
 
     def scene_files(self, scene_id: str):
         return [self.scene_mesh(scene_id)
@@ -147,8 +163,8 @@ class H3DS:
         return self.helper.version_config() == self.helper.version_dataset() and \
             all([os.path.exists(f) for f in self.helper.files()])
 
-    def scenes(self):
-        return self.helper.scenes()
+    def scenes(self, tags: set = {}):
+        return self.helper.scenes(tags)
 
     def default_views_configs(self, scene_id: str):
         return self.helper.default_views_configs()

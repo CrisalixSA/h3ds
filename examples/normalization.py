@@ -43,5 +43,4 @@ if __name__ == "__main__":
     parser.add_argument('--h3ds-token', help='H3DS access token', required=True)
 
     args = parser.parse_args()
-    main(h3ds_path=args.h3ds_path,
-        h3ds_token=args.h3ds_token)
+    main(h3ds_path=args.h3ds_path, h3ds_token=args.h3ds_token)
