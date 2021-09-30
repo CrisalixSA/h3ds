@@ -22,19 +22,20 @@ h3ds = H3DS(path='local/path/to/h3ds')
 h3ds.download(token=H3DS_ACCESS_TOKEN)
 mesh, images, masks, cameras = h3ds.load_scene(scene_id='1b2a8613401e42a8')
 ```
-The returned types when loading a scene are `Trimesh`, `list(PIL.Image)` `list(PIL.Image)` and `list(tuple(np.ndarray))`.
 
 To list the available scenes, simply use:
 ```python
-scenes = h3ds.scenes() # ['1b2a8613401e42a8', ...]
+scenes = h3ds.scenes() # returns all the scenes ['1b2a8613401e42a8', ...]
+scenes = h3ds.scenes(tags={'h3d-net'}) # returns the scenes used in H3D-Net paper
 ```
+
 
 In order to reproduce the results from H3D-Net, we provide default views configurations for each scene:
 ```python
 views_configs = h3ds.default_views_configs(scene_id='1b2a8613401e42a8') # '3', '4', '8', '16' and '32'
 mesh, images, masks, cameras = h3ds.load_scene(scene_id='1b2a8613401e42a8', views_config_id='3')
 ```
-This will load a scene with 3 images, 3 masks and 3 cameras.
+This will load a scene with a mesh, 3 images, 3 masks and 3 cameras.
 
 Please, see the provided examples for more insights.
 

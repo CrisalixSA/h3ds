@@ -6,12 +6,13 @@ from random import choice
 import numpy as np
 
 from h3ds.dataset import H3DS
+from h3ds.log import logger
 
 
-def main(h3ds_path):
+def main(h3ds_path, h3ds_token):
 
     h3ds = H3DS(path=h3ds_path)
-    h3ds.download(token=os.getenv('H3DS_ACCESS_TOKEN'))
+    h3ds.download(token=h3ds_token)
     scene_id = choice(h3ds.scenes())
 
     # A scene can be loaded in its real scale (mm)
@@ -29,7 +30,9 @@ def main(h3ds_path):
         [mesh_mm.vertices,
          np.ones((mesh_mm.vertices.shape[0], 1))])
     vertices_mm_to_unit = (transform @ vertices_mm_hom.T).T[:, :3]
+
     assert np.allclose(vertices_mm_to_unit, mesh_unit.vertices)
+    logger.info('Transformed meshes are equivalent')
 
 
 if __name__ == "__main__":
@@ -37,6 +40,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description='Illustrates the H3DS transformations')
     parser.add_argument('--h3ds-path', help='H3DS dataset path', required=True)
+    parser.add_argument('--h3ds-token', help='H3DS access token', required=True)
 
     args = parser.parse_args()
-    main(h3ds_path=args.h3ds_path)
+    main(h3ds_path=args.h3ds_path, h3ds_token=args.h3ds_token)
