@@ -39,12 +39,22 @@ class H3DSHelper:
         self.path = path
         self._config = toml.load(config_path)
 
+    def version_config(self):
+        return str(self._config['version'])
+
+    def version_dataset(self):
+        try:
+            with open(self.version_file()) as f:
+                return str(f.readline().rstrip())
+        except:
+            return None
+
     def scenes(self):
         return list(self._config['scenes'].keys())
 
     def files(self):
-        return reduce(lambda x, y: x + y,
-                      [self.scene_files(s) for s in self.scenes()])
+        return [self.version_file()] + \
+            reduce(lambda x, y: x + y, [self.scene_files(s) for s in self.scenes()])
 
     def default_views_config(self, scene_id: str):
         return list(
@@ -52,6 +62,9 @@ class H3DSHelper:
 
     def scene_views(self, scene_id: str):
         return self._config['scenes'][scene_id]['views']
+
+    def version_file(self):
+        return os.path.join(self.path, 'version.txt')
 
     def scene_files(self, scene_id: str):
         return [self.scene_mesh(scene_id)
@@ -92,7 +105,7 @@ class H3DS:
 
         if not self.is_available():
             logger.warning(
-                f'H3DS was not found at {self.path}. Change the path or call H3DS.download.'
+                f'H3DS v{self.helper.version_config()} was not found at {self.path}. Change the path or call H3DS.download.'
             )
 
     def download(self, token, force=False):
@@ -131,7 +144,8 @@ class H3DS:
         shutil.rmtree(tmp_dir)
 
     def is_available(self):
-        return all([os.path.exists(f) for f in self.helper.files()])
+        return self.helper.version_config() == self.helper.version_dataset() and \
+            all([os.path.exists(f) for f in self.helper.files()])
 
     def scenes(self):
         return self.helper.scenes()

@@ -39,6 +39,7 @@ class TestH3DSBase(unittest.TestCase):
         self.config = toml.dumps({
             'file_id': '1234',
             'file_md5': 'abcd',
+            'version': 0.1,
             'scenes': {
                 'a1b2c3': {
                     'views': 3,
@@ -60,7 +61,8 @@ class TestH3DSHelper(TestH3DSBase):
 
     def test_files(self):
         files = self.helper.files()
-        for scene_id in self.helper.scenes():
+        self.assertTrue(os.path.join(self.path, 'version.txt') in files)
+        for id in self.helper.scenes():
             scene_path = os.path.join(self.path, 'a1b2c3')
             self.assertTrue(os.path.join(scene_path, 'full_head.obj') in files)
             self.assertTrue(os.path.join(scene_path, 'cameras.npz') in files)
@@ -69,7 +71,7 @@ class TestH3DSHelper(TestH3DSBase):
                     os.path.join(scene_path, 'image', 'img_{0:04}.jpg'.format(
                         idx)) in files)
                 self.assertTrue(
-                    os.path.join(scene_path, 'mask', 'mask_{0:04}.jpg'.format(
+                    os.path.join(scene_path, 'mask', 'mask_{0:04}.png'.format(
                         idx)) in files)
 
     def test_default_views_config(self):
@@ -89,7 +91,7 @@ class TestH3DSHelper(TestH3DSBase):
                 os.path.join(scene_path, 'image', 'img_{0:04}.jpg'.format(idx))
                 in scene_files)
             self.assertTrue(
-                os.path.join(scene_path, 'mask', 'mask_{0:04}.jpg'.format(idx))
+                os.path.join(scene_path, 'mask', 'mask_{0:04}.png'.format(idx))
                 in scene_files)
 
     def test_scene_mesh(self):
@@ -109,7 +111,7 @@ class TestH3DSHelper(TestH3DSBase):
         scene_path = os.path.join(self.path, 'a1b2c3')
         for idx in range(self.helper.scene_views('a1b2c3')):
             self.assertTrue(
-                os.path.join(scene_path, 'mask', 'mask_{0:04}.jpg'.format(idx))
+                os.path.join(scene_path, 'mask', 'mask_{0:04}.png'.format(idx))
                 in scene_masks_files)
 
     def test_scene_cameras(self):
@@ -121,6 +123,8 @@ class TestDataset(TestH3DSBase):
 
     def setUp(self):
         super().setUp()
+        with open(self.helper.version_file(), 'w') as f:
+            f.write(self.helper.version_config())
         for s in self.helper.scenes():
             os.makedirs(os.path.join(self.path, s))
             os.makedirs(os.path.join(self.path, s, 'image'))
@@ -135,7 +139,6 @@ class TestDataset(TestH3DSBase):
                 cameras['scale_mat_%d' % idx] = np.random.rand(4, 4)
                 cameras['world_mat_%d' % idx] = np.random.rand(4, 4)
             np.savez(self.helper.scene_cameras(s), **cameras)
-            AffineTransform().save(self.helper.scene_normalization_transform(s))
 
     def test_is_available(self):
 
