@@ -13,8 +13,10 @@ The simplest way to use the H3DS dataset is by installing it as a pip package:
 pip install h3ds
 ```
 
-## Using H3DS
+## Accessing H3DS data
+
 You can start using H3DS in your project with a few lines of code
+
 ```python
 from h3ds.dataset import H3DS
 
@@ -29,7 +31,6 @@ scenes = h3ds.scenes() # returns all the scenes ['1b2a8613401e42a8', ...]
 scenes = h3ds.scenes(tags={'h3d-net'}) # returns the scenes used in H3D-Net paper
 ```
 
-
 In order to reproduce the results from H3D-Net, we provide default views configurations for each scene:
 ```python
 views_configs = h3ds.default_views_configs(scene_id='1b2a8613401e42a8') # '3', '4', '8', '16' and '32'
@@ -37,14 +38,18 @@ mesh, images, masks, cameras = h3ds.load_scene(scene_id='1b2a8613401e42a8', view
 ```
 This will load a scene with a mesh, 3 images, 3 masks and 3 cameras.
 
+## Evaluation
 
-Finally, we also provide a method for evaluating your reconstructions:
+We provide methods for evaluating your reconstructions with a single line of code
+
 ```python
-mesh_pred = my_rec_method(images, masks, cameras)
-chamfer, _, _, _ = h3ds.evaluate_scene(scene_id='1b2a8613401e42a8', mesh_pred=mesh_pred)
+mesh_pred, landmarks_pred = my_rec_method(images, masks, cameras)
+chamfer, _, _, _ = h3ds.evaluate_scene('1b2a8613401e42a8', mesh_pred, landmarks_pred)
 ```
 
-Please, see the provided examples for more insights.
+The `landmarks_pred` is an optional dictionary containing landmarks used for a coarse alignment between the predicted mesh and the ground truth mesh. Please, check [this description](https://github.com/CrisalixSA/h3ds/images/landmarks.png) of the landmarks positions.
+
+For more insights, check the examples provided.
 
 ## Terms of use
 By using the H3DS Dataset you agree with the following terms:
