@@ -11,8 +11,9 @@ from PIL import Image
 import numpy as np
 
 from h3ds.log import logger
+from h3ds.mesh import Mesh
 from h3ds.utils import download_file_from_google_drive, md5
-from h3ds.numeric import load_K_Rt, AffineTransform
+from h3ds.numeric import load_K_Rt, AffineTransform, perform_alignment, perform_icp, transform_mesh, unidirectional_chamfer_distance
 
 
 class ConfigsHelper:
@@ -107,6 +108,12 @@ class H3DSHelper:
 
     def scene_cameras(self, scene_id: str):
         return os.path.join(self.path, scene_id, 'cameras.npz')
+
+    def scene_landmarks(self, scene_id: str):
+        return os.path.join(self.path, scene_id, 'landmarks.txt')
+
+    def scene_region(self, scene_id: str, region_id: str):
+        return os.path.join(self.path, scene_id, 'regions', f'{region_id}.txt')
 
 
 class H3DS:
@@ -239,7 +246,7 @@ class H3DS:
         Returns:
             trimesh.Trimesh: The 3D geometry of the scene as a mesh
         """
-        mesh = trimesh.load(self.helper.scene_mesh(scene_id), process=False)
+        mesh = Mesh().load(self.helper.scene_mesh(scene_id))
         if normalized:
             normalization_transform = self._load_normalization_transform(
                 scene_id)
@@ -303,6 +310,41 @@ class H3DS:
 
         return self._filter_views(cameras, scene_id, views_config_id)
 
+    def load_landmarks(self, scene_id: str):
+        """
+        Loads the landmarks for a given scene as dictionary. The landmark
+        is provided with a point identifier of the scene mesh vertices
+        Args:
+            scene_id    (str): Scene identifier
+        Returns:
+            dict: A dictionary with the annotated landmarks
+        """
+        with open(self.helper.scene_landmarks(scene_id)) as f:
+            landmarks = {
+                l[0]: int(l[1])
+                for l in [l.rstrip().split() for l in f.readlines()]
+            }
+
+        return landmarks
+
+    def load_region(self, scene_id: str, region_id: str):
+        """
+        Loads a list of indices defining a region of the mesh. The available regions are:
+        - 'face': Includes the frontal face, the ears and the neck.
+        - 'face_sphere': Includes all the vertices inside sphere centered at the tip
+                         of the nose with radius 95mm (standard for evaluation).
+        - 'nose': Includes only the vertices belonging to the nose.
+        Args:
+            scene_id  (str): Scene identifier
+            region_id (str): Region identifier
+        Returns:
+            np.ndarray: An array containing either a list of indices or a mask
+        """
+        with open(self.helper.scene_region(scene_id, region_id)) as f:
+            region = np.array([np.int(l.rstrip()) for l in f.readlines()])
+
+        return region
+
     def load_normalization_matrix(self, scene_id: str):
         """
         Loads the transformation that normalizes the scene from mm to a unit sphere.
@@ -312,6 +354,49 @@ class H3DS:
             np.array : A 4x4 similarity transform
         """
         return self._load_normalization_transform(scene_id).matrix
+
+    def evaluate_scene(self,
+                       scene_id: str,
+                       mesh_pred: trimesh.Trimesh,
+                       landmarks_pred: dict = None):
+        """
+        Evaluates a predicted mesh with respect the ground truth scene. If landmarks
+        are provided, the predicted mesh is coarsely aligned towards the ground truth.
+        Then, ICP is performed to finely align the meshes, and finally the chamfer
+        distance is computed in both ways. The landmarks must be provided as
+        a dictionary with the following structure {landmark_id: vertex_id}.
+        The required landmarks_ids (if provided) are:
+        [right_eye, left_eye, nose_tip, nose_base, right_lips, left_lips]
+        See the README and the examples for more information
+        Args:
+            scene_id,             (str): Scene identifier
+            mesh_pred (trimesh.Trimesh): Predicted mesh for that scene
+            landmarks_pred       (dict): Landkarks on the predicted mesh
+        Returns:
+            np.array: Nx3 array with the chamfer distance gt->pred for each groundtruth vertex
+            np.array: Mx3 array with the chamfer distance pred->gt for eacu predicted vertex
+            Mesh    : Ground truth mesh from H3DS
+            Mesh    : Finely aligned predicted mesh
+        """
+        mesh_gt = self.load_mesh(scene_id)
+        landmarks_gt = self.load_landmarks(scene_id)
+        mask_gt = self.load_region(scene_id, 'face')
+
+        # Perform coarse alignment if landmarks provided
+        mesh_pred, t_coarse = perform_alignment(mesh_pred, mesh_gt,
+                                                landmarks_pred, landmarks_gt)
+
+        # Perform ICP using a stable region defined by mask_gt
+        _, t_icp = perform_icp(mesh_gt, mesh_pred, mask_gt)
+        mesh_pred = transform_mesh(mesh_pred, np.linalg.inv(t_icp))
+
+        # Compute chamfers
+        chamfer_gt_pred = unidirectional_chamfer_distance(
+            mesh_gt.vertices, mesh_pred.vertices)
+        chamfer_pred_gt = unidirectional_chamfer_distance(
+            mesh_pred.vertices, mesh_gt.vertices)
+
+        return chamfer_gt_pred, chamfer_pred_gt, mesh_gt, mesh_pred
 
     def _load_normalization_transform(self, scene_id: str):
         """
