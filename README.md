@@ -37,6 +37,13 @@ mesh, images, masks, cameras = h3ds.load_scene(scene_id='1b2a8613401e42a8', view
 ```
 This will load a scene with a mesh, 3 images, 3 masks and 3 cameras.
 
+
+Finally, we also provide a method for evaluating your reconstructions:
+```python
+mesh_pred = my_rec_method(images, masks, cameras)
+chamfer, _, _, _ = h3ds.evaluate_scene(scene_id='1b2a8613401e42a8', mesh_pred=mesh_pred)
+```
+
 Please, see the provided examples for more insights.
 
 ## Terms of use

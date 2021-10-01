@@ -6,7 +6,6 @@ from functools import reduce
 
 import toml
 from tqdm import tqdm
-import trimesh
 from PIL import Image
 import numpy as np
 
@@ -225,10 +224,10 @@ class H3DS:
             views_config_id (str): Views configuration defining subset of views
             normalized     (bool): Scene normalized to fit inside a unit sphere
         Returns:
-            trimesh.Trimesh: The 3D geometry of the scene as a mesh
-            list : Array of the images
-            list : Array of the masks
-            list : Array of the cameras
+            Mesh: The 3D geometry of the scene as a mesh
+            list: Array of the images
+            list: Array of the masks
+            list: Array of the cameras
         """
         mesh = self.load_mesh(scene_id, normalized)
         images = self.load_images(scene_id, views_config_id)
@@ -239,12 +238,12 @@ class H3DS:
 
     def load_mesh(self, scene_id: str, normalized: bool = False):
         """
-        Loads the mesh for a given scene as a trimesh.Trimesh.
+        Loads the mesh for a given scene.
         Args:
             scene_id    (str): Scene identifier
             normalized (bool): Scene normalized to fit inside a unit sphere
         Returns:
-            trimesh.Trimesh: The 3D geometry of the scene as a mesh
+            Mesh: The 3D geometry of the scene as a mesh
         """
         mesh = Mesh().load(self.helper.scene_mesh(scene_id))
         if normalized:
@@ -357,7 +356,7 @@ class H3DS:
 
     def evaluate_scene(self,
                        scene_id: str,
-                       mesh_pred: trimesh.Trimesh,
+                       mesh_pred: Mesh,
                        landmarks_pred: dict = None):
         """
         Evaluates a predicted mesh with respect the ground truth scene. If landmarks
@@ -369,9 +368,9 @@ class H3DS:
         [right_eye, left_eye, nose_tip, nose_base, right_lips, left_lips]
         See the README and the examples for more information
         Args:
-            scene_id,             (str): Scene identifier
-            mesh_pred (trimesh.Trimesh): Predicted mesh for that scene
-            landmarks_pred       (dict): Landkarks on the predicted mesh
+            scene_id,       (str): Scene identifier
+            mesh_pred      (Mesh): Predicted mesh for that scene
+            landmarks_pred (dict): Landkarks on the predicted mesh
         Returns:
             np.array: Nx3 array with the chamfer distance gt->pred for each groundtruth vertex
             np.array: Mx3 array with the chamfer distance pred->gt for eacu predicted vertex
