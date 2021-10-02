@@ -201,6 +201,15 @@ class H3DS:
         """
         return self.helper.scenes(tags)
 
+    def regions(self):
+        """
+        Specifies the list of region identifiers that are available for each scene.
+        Args:
+        Returns:
+            list : List of regions identifiers (str)
+        """
+        return ['face', 'face_sphere', 'nose']
+
     def default_views_configs(self, scene_id: str):
         """
         Specifies all the subsets of views (configs) available for a certain scene. Each
@@ -357,20 +366,28 @@ class H3DS:
     def evaluate_scene(self,
                        scene_id: str,
                        mesh_pred: Mesh,
-                       landmarks_pred: dict = None):
+                       landmarks_pred: dict = None,
+                       region_id: str = None):
         """
         Evaluates a predicted mesh with respect the ground truth scene. If landmarks
         are provided, the predicted mesh is coarsely aligned towards the ground truth.
         Then, ICP is performed to finely align the meshes, and finally the chamfer
         distance is computed in both ways. The landmarks must be provided as
         a dictionary with the following structure {landmark_id: vertex_id}.
+
         The required landmarks_ids (if provided) are:
         [right_eye, left_eye, nose_tip, nose_base, right_lips, left_lips]
+
+        Finally, if a region identifier is provided, the scene is evaluated in that
+        specific region. By default it evaluates with the whole head.
+
         See the README and the examples for more information
+
         Args:
             scene_id,       (str): Scene identifier
             mesh_pred      (Mesh): Predicted mesh for that scene
             landmarks_pred (dict): Landkarks on the predicted mesh
+            region_id       (str): Region identifier
         Returns:
             np.array: Nx3 array with the chamfer distance gt->pred for each groundtruth vertex
             np.array: Mx3 array with the chamfer distance pred->gt for eacu predicted vertex
@@ -379,17 +396,20 @@ class H3DS:
         """
         mesh_gt = self.load_mesh(scene_id)
         landmarks_gt = self.load_landmarks(scene_id)
-        mask_gt = self.load_region(scene_id, 'face')
+        region_gt = self.load_region(scene_id, region_id or 'face')
 
         # Perform coarse alignment if landmarks provided
         mesh_pred, t_coarse = perform_alignment(mesh_pred, mesh_gt,
                                                 landmarks_pred, landmarks_gt)
 
-        # Perform ICP using a stable region defined by mask_gt
-        _, t_icp = perform_icp(mesh_gt, mesh_pred, mask_gt)
+        # Perform fine alignment using ICP
+        _, t_icp = perform_icp(mesh_gt, mesh_pred, region_gt)
         mesh_pred = transform_mesh(mesh_pred, np.linalg.inv(t_icp))
 
-        # Compute chamfers
+        # Compute chamfers. Use the region if specified
+        if region_id:
+            mesh_gt = mesh_gt.cut(region_gt)
+
         chamfer_gt_pred = unidirectional_chamfer_distance(
             mesh_gt.vertices, mesh_pred.vertices)
         chamfer_pred_gt = unidirectional_chamfer_distance(

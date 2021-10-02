@@ -31,7 +31,8 @@ def main(h3ds_path, h3ds_token, output_dir):
     h3ds.download(token=h3ds_token)
 
     # Reconstruct all the scenes used in the h3d-net paper and store the metric
-    metrics = {}
+    metrics_head = {}
+    metrics_face = {}
     h3ds_scenes = h3ds.scenes(tags={'h3d-net'})
     for scene_id in h3ds_scenes:
 
@@ -51,18 +52,44 @@ def main(h3ds_path, h3ds_token, output_dir):
         chamfer_gt_pred, chamfer_pred_gt, mesh_gt, mesh_pred_aligned = \
             h3ds.evaluate_scene(scene_id, mesh_pred, landmarks_pred)
 
-        metrics[scene_id] = np.mean(chamfer_gt_pred)
-        logger.info(f' > Chamfer Distance (mm): {metrics[scene_id]}')
-
-        # We can easily colorize a mesh. Clipping set at 5 mm
+        metrics_head[scene_id] = np.mean(chamfer_gt_pred)
+        logger.info(
+            f' > Chamfer distance full head (mm): {metrics_head[scene_id]}')
         mesh_gt.save(os.path.join(output_dir, f'{scene_id}_gt.obj'))
+
+        # The chamfer computed from prediction to ground truth is only provided for
+        # visualization purporses (i.e. heatmaps).
         mesh_pred_aligned.vertices_color = error_to_color(chamfer_pred_gt,
                                                           clipping_error=5)
         mesh_pred_aligned.save(os.path.join(output_dir, f'{scene_id}_pred.obj'))
 
+        # Evaluate reconstruction in the facial region, defined by a sphere of radius 95mm centered
+        # in the tip of the nose. In this case, a more fine alignment is performed, taking into account
+        # only the vertices from this region. This evaluation should be used when assessing methods
+        # that only reconstruct the frontal face area (i.e. Basel Face Bodel)
+        chamfer_gt_pred, chamfer_pred_gt, mesh_gt, mesh_pred_aligned = \
+            h3ds.evaluate_scene(scene_id, mesh_pred, landmarks_pred, region_id='face_sphere')
+
+        # Note that in both cases we only report the chamfer distane computed from the ground truth
+        # to the prediction, since here we have control over the region where the metric is computed.
+        metrics_face[scene_id] = np.mean(chamfer_gt_pred)
+        logger.info(f' > Chamfer distance face (mm): {metrics_face[scene_id]}')
+        mesh_gt.save(os.path.join(output_dir, f'{scene_id}_face_sphere_gt.obj'))
+
+        # Again, the chamfer computed from prediction to ground truth is only provided for
+        # visualization purporses (i.e. heatmaps).
+        mesh_pred_aligned.vertices_color = error_to_color(chamfer_pred_gt,
+                                                          clipping_error=5)
+        mesh_pred_aligned.save(
+            os.path.join(output_dir, f'{scene_id}_face_sphere_pred.obj'))
+
     # Show average results
     logger.info(
-        f'Average Chamfer Distance (mm): {np.mean(list(metrics.values()))}')
+        f'Average Chamfer Distance full head (mm): {np.mean(list(metrics_head.values()))}'
+    )
+    logger.info(
+        f'Average Chamfer Distance face (mm): {np.mean(list(metrics_face.values()))}'
+    )
 
 
 if __name__ == "__main__":
