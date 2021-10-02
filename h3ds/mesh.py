@@ -60,6 +60,29 @@ class Mesh:
 
         self.vertex_normals = vertex_normals
 
+    def cut(self, indices):
+
+        # Cut vertices
+        other = Mesh(self.dimension, self.dtype)
+        other.vertices = self.vertices[indices].copy()
+        if self.vertex_normals.any():
+            other.vertex_normals = self.vertex_normals[indices].copy()
+        if self.vertices_color.any():
+            other.vertices_color = self.vertices_color[indices].copy()
+
+        # Cut faces
+        faces_mask = np.all(np.isin(self.faces, indices), axis=1)
+        vertices_map = {new_i: i for (i, new_i) in enumerate(np.ravel(indices))}
+        other.faces = np.vectorize(vertices_map.get)(self.faces[faces_mask])
+
+        # Cut texture coords
+        if self.texture_indices.any():
+            other.texture_indices = self.texture_indices[faces_mask].copy()
+        if self.texture_coordinates.any():
+            other.texture_coordinates = self.texture_coordinates.copy()
+
+        return other
+
     def _clear(self):
         self.vertices = np.ndarray(shape=(0, self.dimension), dtype=self.dtype)
         self.vertices_color = np.ndarray(shape=(0, self.dimension),
