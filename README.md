@@ -47,7 +47,7 @@ mesh_pred, landmarks_pred = my_rec_method(images, masks, cameras)
 chamfer, _, _, _ = h3ds.evaluate_scene('1b2a8613401e42a8', mesh_pred, landmarks_pred)
 ```
 
-The `landmarks_pred` is an optional dictionary containing landmarks used for a coarse alignment between the predicted mesh and the ground truth mesh. Please, check [this description](https://github.com/CrisalixSA/h3ds/blob/evaluation/images/landmarks.png) of the landmarks positions.
+The `landmarks_pred` is an optional dictionary containing landmarks used for a coarse alignment between the predicted mesh and the ground truth mesh. Please, check [this description](images/landmarks.png) of the landmarks positions.
 
 For more insights, check the examples provided.
 
