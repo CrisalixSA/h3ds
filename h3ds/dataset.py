@@ -320,8 +320,8 @@ class H3DS:
 
     def load_landmarks(self, scene_id: str):
         """
-        Loads the landmarks for a given scene as dictionary. The landmark
-        is provided with a point identifier of the scene mesh vertices
+        Loads the landmarks for a given scene as dictionary. Each landmark
+        is provided as a vertex index of the mesh.vertices from the scene.
         Args:
             scene_id    (str): Scene identifier
         Returns:
