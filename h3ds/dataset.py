@@ -70,7 +70,7 @@ class H3DSHelper:
         return [self.version_file()] + \
             reduce(lambda x, y: x + y, [self.scene_files(s) for s in self.scenes()])
 
-    def default_views_config(self, scene_id: str):
+    def default_views_configs(self, scene_id: str):
         return list(
             self._config['scenes'][scene_id]['default_views_configs'].keys())
 
@@ -220,7 +220,7 @@ class H3DS:
         Returns:
             list : List of view config identifiers available for that scene.
         """
-        return self.helper.default_views_configs()
+        return self.helper.default_views_configs(scene_id)
 
     def load_scene(self,
                    scene_id: str,
