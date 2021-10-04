@@ -46,7 +46,8 @@ setup(
         'Pillow',
         'tqdm',
         'opencv-python',
-        'scipy'
+        'scipy',
+        'matplotlib'
     ],
     package_data={
         '': ['config.toml']

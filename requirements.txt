@@ -4,8 +4,9 @@ trimesh~=3.4.7
 Pillow~=8.3.1
 tqdm~=4.62.0
 opencv-python~=4.5.3.56
+scipy~=1.5.4
+matplotlib~=3.3.4
+
 build~=0.5.1
 twine~=3.4.2
-scipy~=1.5.4
 yapf~=0.31.0
-matplotlib~=3.3.4
