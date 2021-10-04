@@ -5,7 +5,7 @@ import copy
 import numpy as np
 import scipy
 
-from h3ds.utils import get_file_extension
+from h3ds.utils import get_file_extension, create_parent_directory
 
 
 class Mesh:
@@ -28,6 +28,7 @@ class Mesh:
         return self
 
     def save(self, filename):
+        create_parent_directory(filename)
         if get_file_extension(filename) == '.obj':
             self._save_obj(filename)
         else:

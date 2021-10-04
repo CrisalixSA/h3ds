@@ -55,13 +55,13 @@ def main(h3ds_path, h3ds_token, output_dir):
         metrics_head[scene_id] = np.mean(chamfer_gt_pred)
         logger.info(
             f' > Chamfer distance full head (mm): {metrics_head[scene_id]}')
-        mesh_gt.save(os.path.join(output_dir, f'{scene_id}_gt.obj'))
+        mesh_gt.save(os.path.join(output_dir, 'full_head', f'{scene_id}_gt.obj'))
 
         # The chamfer computed from prediction to ground truth is only provided for
         # visualization purporses (i.e. heatmaps).
         mesh_pred_aligned.vertices_color = error_to_color(chamfer_pred_gt,
                                                           clipping_error=5)
-        mesh_pred_aligned.save(os.path.join(output_dir, f'{scene_id}_pred.obj'))
+        mesh_pred_aligned.save(os.path.join(output_dir, 'full_head', f'{scene_id}_pred.obj'))
 
         # Evaluate reconstruction in the facial region, defined by a sphere of radius 95mm centered
         # in the tip of the nose. In this case, a more fine alignment is performed, taking into account
@@ -74,14 +74,20 @@ def main(h3ds_path, h3ds_token, output_dir):
         # to the prediction, since here we have control over the region where the metric is computed.
         metrics_face[scene_id] = np.mean(chamfer_gt_pred)
         logger.info(f' > Chamfer distance face (mm): {metrics_face[scene_id]}')
-        mesh_gt.save(os.path.join(output_dir, f'{scene_id}_face_sphere_gt.obj'))
+        mesh_gt.save(os.path.join(output_dir, 'face_sphere', f'{scene_id}_gt.obj'))
 
         # Again, the chamfer computed from prediction to ground truth is only provided for
         # visualization purporses (i.e. heatmaps).
         mesh_pred_aligned.vertices_color = error_to_color(chamfer_pred_gt,
                                                           clipping_error=5)
+
+        # For improved visualization the predicted mesh is cut to be inside the unit sphere of 95mm.
+        v_pred = mesh_pred.vertices
+        mask_sphere = np.where(np.linalg.norm(v_pred - v_pred[landmarks_pred['nose_tip']], axis=-1) < 95)
+        mesh_pred_aligned = mesh_pred_aligned.cut(mask_sphere)
+
         mesh_pred_aligned.save(
-            os.path.join(output_dir, f'{scene_id}_face_sphere_pred.obj'))
+            os.path.join(output_dir, 'face_sphere', f'{scene_id}_pred.obj'))
 
     # Show average results
     logger.info(
