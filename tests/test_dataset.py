@@ -10,7 +10,7 @@ import numpy as np
 from PIL import Image
 
 from h3ds.dataset import ConfigsHelper, H3DSHelper, H3DS
-from h3ds.numeric import AffineTransform
+from h3ds.affine_transform import AffineTransform
 
 
 class TestConfigsHelper(unittest.TestCase):
