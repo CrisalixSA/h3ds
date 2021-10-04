@@ -39,8 +39,7 @@ def main(h3ds_path, h3ds_token, output_dir):
         logger.info(f'Evaluating H3D-Net scene {scene_id}.')
 
         # Get scene in millimiters
-        mesh_gt, images, masks, cameras = h3ds.load_scene(scene_id,
-                                                          normalized=False)
+        mesh_gt, images, masks, cameras = h3ds.load_scene(scene_id)
 
         # Perform 3D reconstruction with your algorithm.
         mesh_pred, landmarks_pred = your_reconstruction_method(

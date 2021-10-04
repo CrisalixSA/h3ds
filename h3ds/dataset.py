@@ -11,8 +11,9 @@ import numpy as np
 
 from h3ds.log import logger
 from h3ds.mesh import Mesh
+from h3ds.affine_transform import AffineTransform
 from h3ds.utils import download_file_from_google_drive, md5
-from h3ds.numeric import load_K_Rt, AffineTransform, perform_alignment, perform_icp, transform_mesh, unidirectional_chamfer_distance
+from h3ds.numeric import load_K_Rt, perform_alignment, perform_icp, transform_mesh, unidirectional_chamfer_distance
 
 
 class ConfigsHelper:
