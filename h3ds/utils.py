@@ -68,6 +68,24 @@ def create_parent_directory(path):
     create_directory(parent_dir)
 
 
+def remove_directory(directory):
+    if os.path.exists(directory):
+        shutil.rmtree(directory)
+
+
+def remove_file(file):
+    if os.path.exists(file):
+        os.remove(file)
+
+
+def remove(path):
+    if os.path.exists(path):
+        if os.path.isfile(path):
+            remove_file(path)
+        elif os.path.isdir(path):
+            remove_directory(path)
+
+
 # Visualization
 def error_to_color(errors, clipping_error=None):
     if clipping_error is not None:

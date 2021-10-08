@@ -40,7 +40,7 @@ This will load a scene with a mesh, 3 images, 3 masks and 3 cameras.
 
 ## Evaluation
 
-We provide methods for evaluating your reconstructions with a single line of code
+We provide a method for evaluating your reconstructions with a single line of code
 
 ```python
 mesh_pred, landmarks_pred = my_rec_method(images, masks, cameras)
@@ -50,6 +50,17 @@ chamfer, _, _, _ = h3ds.evaluate_scene('1b2a8613401e42a8', mesh_pred, landmarks_
 The `landmarks_pred` is an optional dictionary containing landmarks used for a coarse alignment between the predicted mesh and the ground truth mesh. Please, check [this description](images/landmarks.png) of the landmarks positions.
 
 For more insights, check the examples provided.
+
+## Comparison against H3D-Net
+
+The results reported in the H3D-Net paper (Table 2) slightly differ from the ones obtained using the evaluation code provided in this repository. This is due to minor implementation changes in the alignment process and in the cutting of the regions. In the following table we provide the results obtained using the evaluation code from this repository. We encourage everyone to use the `evaluate_scene` method provided in this repository to report comparable results accross different works.
+
+| Method \ Views | 3 | 4 | 8 | 16 | 32 |
+|:-:|:-:|---|---|---|---|
+| IDR | 2.79 / 14.58 | 1.88 / 8.99 | 1.83 / 8.34 | 1.31 / 6.37 | 1.25 / 5.71 |
+| H3D-Net | 1.33 / 10.52 | 1.35 / 7.71 | 1.18 / 6.45 | 1.05 / 5.36 | 1.03 / 5.25 |
+
+The numbers from the table can be obtained by running the [evaluation script](examples/evaluation.py) from the examples folder, which uses [the 3D reconstructions from the paper](https://drive.google.com/drive/folders/1urlKA-g4oQgqgcBkv9cUjVyV46oJytN_?usp=sharing) to compute the metrics.
 
 ## Terms of use
 By using the H3DS Dataset you agree with the following terms:

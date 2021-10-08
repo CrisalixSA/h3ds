@@ -4,6 +4,7 @@ import re
 import copy
 import numpy as np
 import scipy
+import trimesh
 
 from h3ds.utils import get_file_extension, create_parent_directory
 
@@ -23,7 +24,9 @@ class Mesh:
         if get_file_extension(filename) == '.obj':
             self._load_obj(filename, elements)
         else:
-            print('Unsuported extension ' + get_file_extension(filename))
+            trim = trimesh.load(filename, process=False, maintain_order=True)
+            self.vertices = trim.vertices
+            self.faces = trim.faces
 
         return self
 
@@ -32,7 +35,8 @@ class Mesh:
         if get_file_extension(filename) == '.obj':
             self._save_obj(filename)
         else:
-            print('Unsuported extension ' + get_file_extension(filename))
+            trimesh.Trimesh(vertices=self.vertices,
+                            faces=self.faces).export(filename)
 
     def copy(self):
         return copy.deepcopy(self)

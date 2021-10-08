@@ -33,7 +33,8 @@ def perform_alignment(mesh_source: Mesh,
 
     if landmarks_source is None or landmarks_target is None:
         logger.warning(
-            'Alignment skipped: Landmarks source and target must not be None.')
+            'Alignment skipped: Landmarks source and/or target were not provided.'
+        )
         return mesh_source, np.eye(4)
 
     l_ids = landmarks_target.keys()
