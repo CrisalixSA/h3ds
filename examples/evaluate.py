@@ -63,7 +63,7 @@ def main(h3ds_path, h3ds_token, method, output_dir):
     metrics_head = {}
     metrics_face = {}
     h3ds_scenes = h3ds.scenes(tags={'h3d-net'})
-    eval_dir = os.path.join(output_dir, 'evaluation')
+    eval_dir = os.path.join(output_dir, 'evaluation', method)
 
     for scene_id in h3ds_scenes:
 
@@ -97,20 +97,22 @@ def main(h3ds_path, h3ds_token, method, output_dir):
                 f' > Chamfer distance full head (mm): {metrics_head[scene_id][views_config_id]}'
             )
             mesh_gt.save(
-                os.path.join(eval_dir, 'full_head', f'{scene_id}_gt.obj'))
+                os.path.join(eval_dir, 'full_head',
+                             f'{scene_id}_{views_config_id}_gt.obj'))
 
             # The chamfer computed from prediction to ground truth is only provided for
             # visualization purporses (i.e. heatmaps).
             mesh_pred_aligned.vertices_color = error_to_color(chamfer_pred_gt,
                                                               clipping_error=5)
             mesh_pred_aligned.save(
-                os.path.join(eval_dir, 'full_head', f'{scene_id}_pred.obj'))
+                os.path.join(eval_dir, 'full_head',
+                             f'{scene_id}_{views_config_id}_pred.obj'))
 
             # Evaluate reconstruction in the facial region, defined by a sphere of radius 95mm centered
             # in the tip of the nose. In this case, a more fine alignment is performed, taking into account
             # only the vertices from this region. This evaluation should be used when assessing methods
             # that only reconstruct the frontal face area (i.e. Basel Face Bodel)
-            chamfer_gt_pred, chamfer_pred_gt, mesh_gt, mesh_pred_aligned = \
+            chamfer_gt_pred, chamfer_pred_gt, mesh_gt_region, mesh_pred_aligned = \
                 h3ds.evaluate_scene(scene_id, mesh_pred, landmarks_pred, region_id='face_sphere')
 
             # Note that in both cases we only report the chamfer distane computed from the ground truth
@@ -119,8 +121,9 @@ def main(h3ds_path, h3ds_token, method, output_dir):
             logger.info(
                 f' > Chamfer distance face (mm): {metrics_face[scene_id][views_config_id]}'
             )
-            mesh_gt.save(
-                os.path.join(eval_dir, 'face_sphere', f'{scene_id}_gt.obj'))
+            mesh_gt_region.save(
+                os.path.join(eval_dir, 'face_sphere',
+                             f'{scene_id}_{views_config_id}_gt.obj'))
 
             # Again, the chamfer computed from prediction to ground truth is only provided for
             # visualization purporses (i.e. heatmaps).
@@ -131,14 +134,15 @@ def main(h3ds_path, h3ds_token, method, output_dir):
             # Ideally one should use landmarks_pred but here we are using landmarks_true because the
             # landmarks_pred are not available.
             landmarks_true = h3ds.load_landmarks(scene_id)
-            v_pred = mesh_pred.vertices
             mask_sphere = np.where(
-                np.linalg.norm(v_pred - v_pred[landmarks_true['nose_tip']],
+                np.linalg.norm(mesh_pred_aligned.vertices -
+                               mesh_gt.vertices[landmarks_true['nose_tip']],
                                axis=-1) < 95)
             mesh_pred_aligned = mesh_pred_aligned.cut(mask_sphere)
 
             mesh_pred_aligned.save(
-                os.path.join(eval_dir, 'face_sphere', f'{scene_id}_pred.obj'))
+                os.path.join(eval_dir, 'face_sphere',
+                             f'{scene_id}_{views_config_id}_pred.obj'))
 
     # Show results per view
     logger.info(f'Average Chamfer Distances for {method} as face / head in mm:')
