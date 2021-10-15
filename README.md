@@ -63,18 +63,15 @@ The results reported in the H3D-Net paper (Table 2) slightly differ from the one
 The numbers from the table can be obtained by running the [evaluation script](examples/evaluation.py) from the examples folder, which uses [the 3D reconstructions from the paper](https://drive.google.com/drive/folders/1urlKA-g4oQgqgcBkv9cUjVyV46oJytN_?usp=sharing) to compute the metrics.
 
 ## Terms of use
-By using the H3DS Dataset you agree with the following terms:
-
-1. The data must be used for non-commercial research and/or education purposes only.
-2. You agree not to copy, sell, trade, or exploit the data for any commercial purposes.
-3. If you will be publishing any work using this dataset, please cite the original paper.
+The H3DS dataset is available for non-commercial or research use only. By using or downloading the files included in the dataset you agree to the terms of this [license agreement](https://drive.google.com/file/d/149t4_BF37eYljI6E2oCjezNaK7KPWvLp/view?usp=sharing) and undertake to comply with its terms. If you do not agree with these terms, you may not accesss, download or use the files.
 
 ## Citation
 ```
-@article{ramon2021h3d,
+@inproceedings{ramon2021h3d,
   title={H3D-Net: Few-Shot High-Fidelity 3D Head Reconstruction},
   author={Ramon, Eduard and Triginer, Gil and Escur, Janna and Pumarola, Albert and Garcia, Jaime and Giro-i-Nieto, Xavier and Moreno-Noguer, Francesc},
-  journal={arXiv preprint arXiv:2107.12512},
+  booktitle={Proceedings of the IEEE/CVF International Conference on Computer Vision},
+  pages={5620--5629},
   year={2021}
 }
 ```
