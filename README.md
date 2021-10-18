@@ -60,7 +60,7 @@ The results reported in the H3D-Net paper (Table 2) slightly differ from the one
 | IDR | 2.79 / 14.58 | 1.88 / 8.99 | 1.83 / 8.34 | 1.31 / 6.37 | 1.25 / 5.71 |
 | H3D-Net | 1.33 / 10.52 | 1.35 / 7.71 | 1.18 / 6.45 | 1.05 / 5.36 | 1.03 / 5.25 |
 
-The numbers from the table can be obtained by running the [evaluation script](examples/evaluation.py) from the examples folder, which uses [the 3D reconstructions from the paper](https://drive.google.com/drive/folders/1urlKA-g4oQgqgcBkv9cUjVyV46oJytN_?usp=sharing) to compute the metrics.
+The numbers from the table can be obtained by running the [evaluation script](examples/evaluate.py) from the examples folder, which uses [the 3D reconstructions from the paper](https://drive.google.com/drive/folders/1urlKA-g4oQgqgcBkv9cUjVyV46oJytN_?usp=sharing) to compute the metrics.
 
 ## Terms of use
 The H3DS dataset is available for non-commercial or research use only. By using or downloading the files included in the dataset you agree to the terms of this [license agreement](https://drive.google.com/file/d/149t4_BF37eYljI6E2oCjezNaK7KPWvLp/view?usp=sharing) and undertake to comply with its terms. If you do not agree with these terms, you may not accesss, download or use the files.
