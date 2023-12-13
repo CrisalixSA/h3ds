@@ -20,7 +20,7 @@ setup(
     name=PACKAGE_NAME,
     version=__version__,
     author='Crisalix SA',
-    author_email='eduard.ramon@crisalix.com',
+    author_email='core.dl@crisalix.com',
     description='Python interface for H3DS dataset',
     long_description=LONG_DESCRIPTION,
     long_description_content_type='text/markdown',
@@ -47,9 +47,10 @@ setup(
         'tqdm',
         'opencv-python',
         'scipy',
-        'matplotlib'
+        'matplotlib',
+        'gdown'
     ],
     package_data={
-        '': ['config.toml']
+        '': ['config_v1.toml', 'config_v2.toml']
     }
 )

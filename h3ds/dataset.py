@@ -18,7 +18,7 @@ from h3ds.numeric import load_K_Rt, perform_alignment, perform_icp, transform_me
 
 class ConfigsHelper:
 
-    identifiers = ['config']
+    identifiers = ['config_v1', 'config_v2']
 
     @classmethod
     def configs(cls):
