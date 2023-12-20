@@ -79,16 +79,6 @@ Evaluation in H3DS version 2.0 (config_v2):
 |:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
 | SIRA++ | 1.56 / 13.66 | 1.18 / 9.70 | 1.21 / 6.09 | 1.05 / 5.59 | 1.18 / 5.28 | 1.08 / 4.96 | 1.03 / 4.71 | 
 
-
-<!-- 
-| Method \ Views | 1 | 3 | 4 | 6 | 8 | 16 | 32 |
-|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
-| H3D-Net (23) | - / - | 1.40 / 11.22 | 1.54 / 8.44 | - / - | 1.34 / 6.49 | 1.11 / 5.69 | - / - |
-| SIRA++ (23) | - / - | 1.13 / 10.84 | 1.18 / 8.07 | - / - | 1.15 / 7.08 | 1.00 / 6.34 | 0.99 / 5.79 |
-| H3D-Net | 2.27 / 14.54 | 1.45 / 10.77 | 1.44 / 6.64 | 1.22 / 5.51 | 1.37 / 5.28 | 1.18 / 4.80 | 1.09 / 4.52 |
-| SIRA++ | 1.56 / 13.66 | 1.18 / 9.70 | 1.21 / 6.09 | 1.05 / 5.59 | 1.18 / 5.28 | 1.08 / 4.96 | 1.03 / 4.71 | 
--->
-
 The numbers from the table can be obtained by running the [evaluation script](examples/evaluate.py) from the examples folder, which uses [the 3D reconstructions from the paper](https://drive.google.com/drive/folders/1urlKA-g4oQgqgcBkv9cUjVyV46oJytN_?usp=sharing) to compute the metrics.
 
 ## Terms of use
