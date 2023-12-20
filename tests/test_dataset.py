@@ -1,17 +1,13 @@
 import os
 import toml
 import tempfile
-import pathlib
 import unittest
-from unittest.mock import patch
 
 import trimesh
 import numpy as np
 from PIL import Image
 
 from h3ds.dataset import ConfigsHelper, H3DSHelper, H3DS
-from h3ds.affine_transform import AffineTransform
-
 
 class TestConfigsHelper(unittest.TestCase):
 
@@ -25,7 +21,7 @@ class TestConfigsHelper(unittest.TestCase):
     def test_get_config_file(self):
         config_file = os.path.join(
             os.path.dirname(os.path.dirname(os.path.realpath(__file__))),
-            'h3ds', 'config.toml')
+            'h3ds', 'config_v1.toml')
         self.assertEqual(ConfigsHelper.get_config_file('config'), config_file)
 
 

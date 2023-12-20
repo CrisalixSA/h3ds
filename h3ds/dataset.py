@@ -18,7 +18,7 @@ from h3ds.numeric import load_K_Rt, perform_alignment, perform_icp, transform_me
 
 class ConfigsHelper:
 
-    identifiers = ['config']
+    identifiers = ['config_v1', 'config_v2']
 
     @classmethod
     def configs(cls):
@@ -118,7 +118,7 @@ class H3DSHelper:
 
 class H3DS:
 
-    def __init__(self, path: str, config_path: str = None):
+    def __init__(self, path: str, config_path: str = None, config_id: str = 'config_v2'):
         """
         Class to manage the data available in the H3DS dataset.
         Args:
@@ -126,8 +126,7 @@ class H3DS:
             config_path (str): Optional custom config file.
         """
         self.path = os.path.expanduser(path)
-        self.config_path = config_path or ConfigsHelper.get_config_file(
-            'config')
+        self.config_path = config_path or ConfigsHelper.get_config_file(config_id)
         self.helper = H3DSHelper(path=self.path, config_path=self.config_path)
         self._config = self.helper._config
 
