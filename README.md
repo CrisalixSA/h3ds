@@ -28,7 +28,7 @@ h3ds.download(token=H3DS_ACCESS_TOKEN) # Python zip decryption is very slow. You
 mesh, images, masks, cameras = h3ds.load_scene(scene_id='1b2a8613401e42a8')
 ```
 
-It is also possible to download and unzip the dataset manually ([v1 link](https://drive.google.com/file/d/1is1AByaMwaWJJN6CwQ4MmeqCHIMiijZw/view?usp=sharing), [v2 link](https://drive.google.com/file/d/12zMORAGo6IArLS0wras2G_K-1yRak4pA/view?usp=sharing)). Then, unzip the file using the `H3DS_ACCESS_TOKEN` as password.
+It is also possible to download and unzip the dataset manually ([v1 link](https://drive.google.com/file/d/1is1AByaMwaWJJN6CwQ4MmeqCHIMiijZw/view?usp=sharing), [v2 link](https://drive.google.com/file/d/1fkkThwVCsuWovh3Ksqzr25SP73-R5Y2D/view?usp=sharing)). Then, unzip the file using the `H3DS_ACCESS_TOKEN` as password.
 
 ```bash
 unzip -P H3DS_ACCESS_TOKEN local/path/to/h3ds.zip -d local/path/to/h3ds
