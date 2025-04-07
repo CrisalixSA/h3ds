@@ -2,8 +2,8 @@
 
 [![PyPI](https://img.shields.io/pypi/v/h3ds?style=flat-square)](https://pypi.org/project/h3ds/)
 
-This repository contains the code for using the H3DS dataset introduced in [H3D-Net: Few-Shot High-Fidelity 3D Head Reconstruction (ICCV 2021)](https://crisalixsa.github.io/h3d-net/) and expanded in [SIRA++: Implicit Shape and Appearance Priors for Few-Shot
-Full Head Reconstruction](https://arxiv.org/abs/2310.08784).
+This repository contains the code for using the H3DS dataset introduced in [H3D-Net: Few-Shot High-Fidelity 3D Head Reconstruction (ICCV 2021)](https://crisalixsa.github.io/h3d-net/) and expanded in [Implicit Shape and Appearance Priors for Few-Shot
+Full Head Reconstruction (TPAMI 2025)](https://crisalixsa.github.io/sira-plus-plus/).
 
 ## Access
 The H3DS dataset is only available for non-commercial research purposes. To request access, please fill in the [contact form](https://docs.google.com/forms/d/e/1FAIpQLScpgNf0AA-2BuqcjDod-StNsolYm3DVLtLEdgROiX49xC83dQ/viewform) with your academic email. Your application will be reviewed and, after acceptance, you will recieve a `H3DS_ACCESS_TOKEN`. Each version of the dataset has a different acces token.
@@ -93,6 +93,9 @@ As of data acquisition in v2, the subjects remains static for images at +-90° d
 ## Projects using H3DS
 Here are some works that we have noticed using the dataset. Please reach out if we missed you!
 
+[Lite2Relight: 3D-aware Single Image Portrait Relighting (SIGGRAPH 2024)](https://vcai.mpi-inf.mpg.de/projects/Lite2Relight/)
+*Rao, Pramod and Fox, Gereon and Meka, Abhimitra and B R, Mallikarjun and Zhan, Fangneng and Weyrich, Tim and Bickel, Bernd and Seidel, Hans-Peter and Pfister, Hanspeter and Matusik, Wojciech and Elgharib, Mohamed and Theobalt, Christian*
+
 [Neural Haircut: Prior-Guided Strand-Based Hair Reconstruction (ICCV 2023)](https://samsunglabs.github.io/NeuralHaircut/)  
 *Sklyarova, Vanessa and Chelishev, Jenya and Dogaru, Andreea and Medvedev, Igor and Lempitsky, Victor and Zakharov, Egor*
 
@@ -133,10 +136,11 @@ If you find this project helpful to your research, please consider citing the fo
 }
 ```
 ```
-@article{caselles2023implicit,
-  title={Implicit Shape and Appearance Priors for Few-Shot Full Head Reconstruction},
+@article{caselles2025implicit,
+  title={Implicit shape and appearance priors for few-shot full head reconstruction},
   author={Caselles, Pol and Ramon, Eduard and Garcia, Jaime and Triginer, Gil and Moreno-Noguer, Francesc},
-  journal={arXiv preprint arXiv:2310.08784},
-  year={2023}
+  journal={IEEE Transactions on Pattern Analysis and Machine Intelligence},
+  year={2025},
+  publisher={IEEE}
 }
 ```
