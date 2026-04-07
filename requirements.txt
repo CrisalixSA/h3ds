@@ -1,7 +1,7 @@
 toml~=0.10.2
-requests~=2.32.4
+requests~=2.33.0
 trimesh~=4.6.13
-Pillow~=11.3.0
+Pillow>=12.1.1
 tqdm~=4.67.1
 opencv-python~=4.12.0.88
 scipy~=1.15.3
