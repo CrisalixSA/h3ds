@@ -1,5 +1,5 @@
 toml~=0.10.2
-requests~=2.32.4
+requests~=2.33.0
 trimesh~=4.6.13
 Pillow~=11.3.0
 tqdm~=4.67.1
