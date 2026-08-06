@@ -122,7 +122,7 @@ Here are some works that we have noticed using the dataset. Please reach out if 
 
 ## Contact Info
 
-Pol Caselles: pol.caselles@crisalix.com
+Janna Escur: janna.escur@crisalix.com
 
 ## Citation
 If you find this project helpful to your research, please consider citing the following:
